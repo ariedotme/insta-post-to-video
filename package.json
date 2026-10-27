@@ -1,0 +1,21 @@
+{
+  "name": "insta-post-to-video",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Turn an Instagram carousel into a 9:16 story video, entirely in the browser.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && npx wrangler@4 deploy"
+  },
+  "dependencies": {
+    "mediabunny": "^1.62.1"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "carousel-to-story",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  // Static files are served directly; requests that match no file (i.e. /api/*) reach the worker.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  }
+}

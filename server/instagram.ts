@@ -37,24 +37,36 @@ export function parseShortcode(input: string): string | null {
   return /^[\w-]{5,}$/.test(text) ? text : null;
 }
 
-// Instagram serves the post's data in the page itself to search crawlers;
-// regular browsers get an empty shell that loads it with a logged-in API.
-const HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-  'Accept-Language': 'en-US,en;q=0.9',
-  Accept: 'text/html',
-};
+// Instagram serves the post's data in the page itself to search crawlers (only these two get it);
+// regular browsers and link-preview bots get an empty shell that loads it with a logged-in API.
+const CRAWLERS = [
+  'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+  'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
+];
+
+/** Tries each crawler in turn, since Instagram rate-limits them separately. */
+async function fetchPage(shortcode: string): Promise<Response> {
+  let response!: Response;
+  for (const userAgent of CRAWLERS) {
+    try {
+      response = await fetch(`https://www.instagram.com/p/${shortcode}/`, {
+        headers: { 'User-Agent': userAgent, 'Accept-Language': 'en-US,en;q=0.9', Accept: 'text/html' },
+        redirect: 'follow',
+      });
+    } catch {
+      throw new PostError('Could not reach Instagram. Try again in a moment.', 502);
+    }
+    if (response.status !== 429 && response.status !== 401) break;
+    await response.body?.cancel();
+  }
+  return response;
+}
 
 export async function fetchPost(shortcode: string): Promise<Post> {
-  let response: Response;
-  try {
-    response = await fetch(`https://www.instagram.com/p/${shortcode}/`, { headers: HEADERS, redirect: 'follow' });
-  } catch {
-    throw new PostError('Could not reach Instagram. Try again in a moment.', 502);
-  }
+  const response = await fetchPage(shortcode);
   if (response.status === 404) throw new PostError('This post does not exist or was removed.', 404);
   if (response.status === 429 || response.status === 401) {
-    throw new PostError('Instagram is limiting requests right now. Try again in a few minutes.', 429);
+    throw new PostError('Instagram blocked the request this time. Try again in a few minutes, or add the images from your device.', 429);
   }
   if (!response.ok) throw new PostError(`Instagram answered with an error (${response.status}).`, 502);
 

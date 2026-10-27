@@ -428,10 +428,7 @@ async function loadPost(link: string) {
   ui.status.textContent = 'Reading the post…';
 
   try {
-    const response = await fetch(`api/post?url=${encodeURIComponent(link)}`);
-    const data = await response.json().catch(() => ({ error: 'The server sent an unexpected answer.' }));
-    if (!response.ok) throw new Error(data.error);
-    const loaded = data as Post;
+    const loaded = await requestPost(link);
 
     let done = 0;
     const total = loaded.images.length;
@@ -467,6 +464,13 @@ async function loadPost(link: string) {
     ui.postLoad.disabled = false;
     ui.postLoad.textContent = 'Load';
   }
+}
+
+async function requestPost(link: string): Promise<Post> {
+  const response = await fetch(`api/post?url=${encodeURIComponent(link)}`);
+  const data = await response.json().catch(() => ({ error: 'The server sent an unexpected answer.' }));
+  if (!response.ok) throw new Error(data.error);
+  return data as Post;
 }
 
 async function download(url: string): Promise<Blob> {

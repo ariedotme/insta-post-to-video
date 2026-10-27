@@ -2,6 +2,13 @@
 
 Paste a link to a multi-image Instagram post and get a 9:16 video for Stories. The video swipes through the images like the carousel does, with a credit to the original author.
 
+**Demo:** https://carousel-to-story.insta-post-to-video.workers.dev
+
+> [!NOTE]
+> Instagram often rate-limits requests that come from the demo's server, which runs on shared Cloudflare IPs. In testing, roughly half of the post links failed to load there. If a link fails, try again in a few minutes, or add the images from your device. Everything else works normally.
+>
+> **Running the app locally works much better.** Requests then leave from your own connection, and every post loaded in testing. See [Development](#development).
+
 ## How it works
 
 1. You paste a post link, such as `https://www.instagram.com/p/…`.
@@ -26,6 +33,7 @@ You can open the app with a post already loaded: `https://your-app/?url=https://
 - Only **public** posts work. Private, age-restricted and some region-locked posts can't be read without logging in. For those, add the images manually.
 - Videos inside a carousel appear as their cover image.
 - The API reads the same server-rendered page that Instagram serves to search engines. Instagram can change or restrict that page at any time. If loading breaks, `server/instagram.ts` is the single place to fix.
+- Instagram rate-limits many datacenter IPs, so a hosted API fails more often than a local one (see the note at the top). Hosting the API somewhere with different outgoing IPs may help, but this hasn't been tested yet.
 
 ## Development
 

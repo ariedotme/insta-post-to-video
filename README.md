@@ -4,6 +4,10 @@ Paste a link to a multi-image Instagram post and get a 9:16 video for Stories. T
 
 **Demo:** https://carousel-to-story.insta-post-to-video.workers.dev
 
+![Loading a post, switching the transition, moving the credits, jumping to an image and exporting the video](docs/demo.gif)
+
+<sub>The recording uses sample images. [Watch it in full quality (MP4)](docs/demo.mp4).</sub>
+
 > [!NOTE]
 > Instagram often rate-limits requests that come from the demo's server, which runs on shared Cloudflare IPs. In testing, roughly half of the post links failed to load there. If a link fails, try again in a few minutes, or add the images from your device. Everything else works normally.
 >
